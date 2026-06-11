@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial Player</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="main">
+        <div class="navbar">
+            <p class="first">Start date: 21 جوزا</p>
+            <p class="fourth">Finish date: 12 سرطان</p>
+            <p class="second">0% is completed</p>
+            <p class="third">0 lectures each day</p>
+            
+        </div>
+
+        <div class="video">
+            <video class="myvideo" controls>
+                <source src="video.mp4" type="video/mp4">
+                Your browser does not support the video tag
+            </video>
+            <iframe class="myframe" src="web.html" style="display: none;"></iframe>
+        </div>
+
+
+        <div class="lessons">
+    <% let i = 1 %>
+    <% for (const lesson of lessons) { %>
+
+        <div
+            class="cards
+            <%= lesson.IS_VIDEO == 1 ? 'is-video' : 'is-file' %>
+            <%= lesson.IS_SEEN == 1 ? 'pressed' : '' %>"
+            data-id="<%= lesson.LESSON_ID %>"
+            data-isvideo="<%= lesson.IS_VIDEO %>"
+        >
+            <h4><%= i %></h4>
+        </div>
+
+        <% i++ %>
+
+    <% } %>
+</div>
+
+        
+    </div>
+     <script src="//code.jquery.com/jquery-4.0.0.min.js"></script>
+    <script src="frontend.js" ></script>
+</body>
+</html>
