@@ -2,6 +2,11 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: "Nunito";
+}
+
+.ar {
+    font-family: "Cairo";
 }
 
 body {
@@ -15,27 +20,51 @@ body {
     display: grid;
     grid-template-rows: 7% 83% 10%;
     height: 100vh;
-    background-color: whitesmoke;
+    /* background-color: blue; */
+
     
 }
 
 .navbar {
-    width: 100vw;
-    background-color: burlywood;
+    width: 90vw;
+    /* background-color: burlywood; */
     display: flex;
     justify-content: space-around;
-    padding-top: 1rem;
+    justify-self: center;
+    align-items: center;
+}
+
+.nav-card {
+    /* background-color: aqua; */
+    padding: 0.5rem;
+
+    border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.logo {
+    background-color: #80c098;
+    padding: 0rem 30px;
+    font-family: "Monoton";
+    font-size: 1.8rem;
+    color: white;
+    font-weight: 400;
+    box-shadow: -4px 6px 8px rgba(0, 0, 0, 0.2);
 }
 
 .video {
     width: 100vw;
-    /* background-color: aqua; */
+    background-color: #DDDDDD;
     overflow: hidden;
+    border-radius: 1%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .lessons {
     width: 100vw;
-    background-color: bisque;
+    /* background-color: bisque; */
     padding-top: 0.5rem;
     padding-left: 1rem;
     padding-right: 1rem ;
@@ -52,21 +81,21 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 2px solid black;
-    border-radius: 10px;
+    border-radius: 17px;
     flex: 0 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .is-video {
-    background-color: purple;
+    background-color: white;
 }
 
 .is-file {
-    background-color: darkgray;
+    background-color: #bfc4c594;
 }
 
 .pressed {
-    background-color: greenyellow;
+    background-color: #80c098;
 }
 
 video {

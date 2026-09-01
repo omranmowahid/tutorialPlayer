@@ -5,24 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutorial Player</title>
     <link href="style.css" rel="stylesheet">
+    <link href="title-image.png" type="image/png" rel="icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&family=Monoton&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+
 </head>
 <body>
     <div class="main">
         <div class="navbar">
-            <p class="first">Start date: 21 جوزا</p>
-            <p class="fourth">Finish date: 12 سرطان</p>
-            <p class="second">0% is completed</p>
-            <p class="third">0 lectures each day</p>
+            <p class="nav-card first">Start date: <span class="ar">N/A</span></p>
+            <p class="nav-card todayDate">Today: <span class="ar">جوزا 21</span></p>
+            <p class="nav-card fourth">Finish date: <span class="ar">سرطان 12</span></p>
+            <p class="nav-card logo">SEELOO</p>
+            <p class="nav-card second">0% Completed</p>
+            <p class="nav-card third">0 lectures each day</p>
+            <p class="nav-card covered">Covered Today: 0 </p>
             
         </div>
 
         <div class="video">
-            <video class="myvideo" controls>
+            <video class="myvideo" controls> 
                 <source src="video.mp4" type="video/mp4">
                 Your browser does not support the video tag
             </video>
             <iframe class="myframe" src="web.html" style="display: none;"></iframe>
         </div>
+
 
 
         <div class="lessons">
@@ -31,10 +40,10 @@
 
         <div
             class="cards
-            <%= lesson.IS_VIDEO == 1 ? 'is-video' : 'is-file' %>
-            <%= lesson.IS_SEEN == 1 ? 'pressed' : '' %>"
-            data-id="<%= lesson.LESSON_ID %>"
-            data-isvideo="<%= lesson.IS_VIDEO %>"
+            <%= lesson.is_video == 1 ? 'is-video' : 'is-file' %>
+            <%= lesson.is_seen == 1 ? 'pressed' : '' %>"
+            data-id="<%= lesson.lesson_id %>"
+            data-isvideo="<%= lesson.is_video %>"
         >
             <h4><%= i %></h4>
         </div>
@@ -44,9 +53,15 @@
     <% } %>
 </div>
 
+
+
+
+
         
     </div>
-     <script src="//code.jquery.com/jquery-4.0.0.min.js"></script>
+     <script src="jquery.js"></script>
     <script src="frontend.js" ></script>
 </body>
 </html>
+
+

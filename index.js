@@ -1,222 +1,473 @@
 import express from "express";
 import bodyParser from "body-parser";
-import fs from 'fs';
+import fs from "fs";
 import path from "path";
-import OracleDB from "oracledb";
+import mysql from "mysql2/promise";
 import Ffmpeg from "fluent-ffmpeg";
 
 
+
+
+
+
+
+
+
+const TUTORIAL_PATH = String.raw`C:\0courses\Udemy - The Git & Github Bootcamp 1080 2025-4`;
+const DB_NAME = "TUTORIAL_PLAYER";
+
+
+
+const mysqlConfig = {
+  host: "localhost",
+  user: "root",
+  password: "parwan",
+  database: DB_NAME
+};  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const app = express();
-const port = 3000;
-const TUTORIAL_NAME = 'Javascript'
-const TUTORIAL_PATH = String.raw`D:\udemy\javascript\Udemy - The Complete JavaScript Course 2025 From Zero to Expert! 1080 2025-10`
-const COURSE_ID = 1;
+const port = 3007;
 
+
+// ===============================
+// MYSQL CONNECTION
+// ===============================
+
+await createDatabase();
+
+let COURSE_ID;
+COURSE_ID = await getCourseId(TUTORIAL_PATH);
+
+
+
+
+// ===============================
+// CREATE DATABASE + TABLE
+// ===============================
+async function createDatabase() {
+  let connection;
+  try {
+    // Connect to MySQL server WITHOUT database
+    connection = await mysql.createConnection({
+      host: "localhost",
+      user: "root",
+      password: "parwan"
+    });
+    await connection.query(`
+      CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`
+      CHARACTER SET utf8mb4
+      COLLATE utf8mb4_unicode_ci
+    `);
+    console.log("Database checked/created successfully.");
+    await connection.end();
+    // Now connect to the newly created database
+    connection = await mysql.createConnection({
+      host: "localhost",
+      user: "root",
+      password: "parwan",
+      database: DB_NAME
+    });
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS course (
+        course_id INT AUTO_INCREMENT PRIMARY KEY,
+        root_path VARCHAR(1000) NOT NULL UNIQUE
+      )
+    `);
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS lesson (
+        lesson_id INT AUTO_INCREMENT PRIMARY KEY,
+        path VARCHAR(1000) NOT NULL,
+        root_path VARCHAR(1000) NOT NULL,
+        is_video TINYINT(1) DEFAULT 0,
+        length INT DEFAULT 0,
+        course_id INT NOT NULL,
+        is_seen TINYINT(1) DEFAULT 0,
+        seen_date DATETIME NULL,
+        UNIQUE KEY unique_lesson_path (path(255)),
+        FOREIGN KEY (course_id)
+          REFERENCES course(course_id)
+      )
+    `);
+    console.log("Tables checked/created successfully.");
+  } catch (err) {
+    console.error("Database creation error:", err);
+    throw err;
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+}
+// ===============================
+// MYSQL CONNECTION
+// ===============================
+function mysqlInstance() {
+  return mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "parwan",
+    database: DB_NAME,
+  });
+}
+// ===============================
+// DATABASE QUERY
+// ===============================
+async function query(command, values = []) {
+  let connection;
+  try {
+    connection = await mysqlInstance();
+    const [rows] =
+      await connection.execute(command, values);
+    return rows;
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+}
+// ===============================
+// DATABASE SAVE
+// ===============================
+async function saveLogic(command, values = []) {
+  let connection;
+  try {
+    connection = await mysqlInstance();
+    await connection.execute(command, values);
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+}
+// ===============================
+// SERVER
+// ===============================
 app.set("view engine", "ejs");
-
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public'));
-app.use(express.json())
-
-
-// continoutsly check whether there is addition in files & update db
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(express.static("public"));
+app.use(express.json());
+// ===============================
+// HOME
+// ===============================
 app.get("/", async (req, res) => {
   try {
-
-    const allFiles = getAllFiles(TUTORIAL_PATH);
-
-    for (const path of allFiles) {
-
-      if (path.endsWith('.mp4')) { 
-
-        const length = await getVideoDurationAsync(path);
-
+    const allFiles =
+      getAllFiles(TUTORIAL_PATH);
+    for (const filePath of allFiles) {
+      if (filePath.endsWith(".mp4")) {
+        const length =
+          await getVideoDurationAsync(filePath);
         await saveLogic(
-          `insert into lesson
-           (lesson_id, path, is_video, length, course_id)
-           select lesson_seq.nextval, :path, :is_video, :length, 1
-           from dual
-           where not exists (
-             select 1
-             from lesson
-             where path = :path
-           )`,
-          {
-            path,
-            is_video: 1,
-            length
-          }
+          `INSERT IGNORE INTO lesson
+           (path, root_path, is_video, length, course_id)
+           VALUES (?, ?, ?, ?, ?)`,
+          [
+            filePath,
+            TUTORIAL_PATH,
+            1,
+            length,
+            COURSE_ID
+          ]
         );
-
       } else {
-
         await saveLogic(
-          `insert into lesson
-           (lesson_id, path, course_id)
-           select lesson_seq.nextval, :path, 1
-           from dual
-           where not exists (
-             select 1
-             from lesson
-             where path = :path
-           )`,
-          { path }
+          `INSERT IGNORE INTO lesson
+           (path, root_path, course_id)
+           VALUES (?, ?, ?)`,
+          [
+            filePath,
+            TUTORIAL_PATH,
+            COURSE_ID
+          ]
         );
       }
     }
-
-    let lessons = await query('select lesson_id, path, is_seen, is_video from lesson order by lesson_id');
-    
-
-
-    res.render('index', {lessons});
-
-  } catch (err) { 
+    const lessons = await query(
+      `SELECT
+        lesson_id,
+        path,
+        is_seen,
+        is_video
+       FROM lesson
+       where course_id = ?
+       ORDER BY lesson_id`,
+       [COURSE_ID]
+    );
+    res.render("index", {
+      lessons
+    });
+  } catch (err) {
     console.error(err);
     res.status(500).send(err.message);
   }
 });
-
-app.get('/file/:id', async (req, res) => {
-    const lessonId = req.params.id
-    const videoPath = await query(`select path from lesson where lesson_id = ${lessonId}`)
-    const path = String.raw`${videoPath[0].PATH}`;
-    res.sendFile(path);
-});
-
-app.get('/summary', async (req, res) => {
-    const lectures = await query('select count(is_video) as "lecture" from lesson where is_video = 1');
-    const seen = await query('select count(is_seen) as "seen"  from lesson where is_seen = 1 and is_video = 1');
-    const result = {
-      'lectures': lectures[0].lecture,
-      'seen': seen[0].seen
+// ===============================
+// GET FILE
+// ===============================
+app.get("/file/:id", async (req, res) => {
+  try {
+    const lessonId = req.params.id;
+    const videoPath = await query(
+      `SELECT path
+       FROM lesson
+       WHERE lesson_id = ?`,
+      [lessonId]
+    );
+    if (videoPath.length === 0) {
+      return res
+        .status(404)
+        .send("Lesson not found");
     }
-    // const lessons = 0;
-    res.json(result);
-});
-
-
-app.post('/lesson/save', async (req, res) => {
-  const {id} = req.body;
-
-  try{
-    saveLogic(`update lesson set is_seen = 1 where lesson_id = :id`, {id});
-    return res.json({ success: true });
+    res.sendFile(videoPath[0].path);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500).send(err.message);
   }
-
-})
-
-app.delete('/lesson/delete', async (req, res) => {
-  const {id} = req.body;
-  try{
-    saveLogic(`update lesson set is_seen = 0 where lesson_id = :id`, {id});
-    return res.json({ success: true });
+});
+// ===============================
+// SUMMARY
+// ===============================
+app.get("/summary", async (req, res) => {
+  try {
+    const lectures = await query(
+      `SELECT COUNT(*) AS lecture
+       FROM lesson
+       WHERE is_video = 1 and course_id = ?`, [COURSE_ID]
+    );
+    const seen = await query(
+      `SELECT COUNT(*) AS seen
+       FROM lesson
+       WHERE is_seen = 1
+       AND is_video = 1 and course_id = ?`, [COURSE_ID]
+    );
+    const covered = await query(
+      `SELECT COUNT(*) AS covered
+       FROM lesson
+       WHERE DATE(seen_date) = CURDATE()
+       AND is_video = 1 and course_id = ?`, [COURSE_ID]
+    );
+    res.json({
+      lectures: lectures[0].lecture,
+      seen: seen[0].seen,
+      covered: covered[0].covered
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: err.message
+    });
   }
-})
-
-
-
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function getAllFiles(dirPath, files=[]) {
-  const items = fs.readdirSync(dirPath, {withFileTypes: true});
-  for (const item of items) {
-    const fullPath = path.join(dirPath, item.name);
-
-    if (item.isDirectory()) {
-      getAllFiles(fullPath, files);
-    } else {
-      if (!fullPath.endsWith('.vtt')) {
-        files.push(fullPath)
-      }
-    }
+// ===============================
+// SAVE LESSON
+// ===============================
+app.post("/lesson/save", async (req, res) => {
+  const { id, date } = req.body;
+  console.log(`id: ${id} ===== date: ${date}`);
+  try {
+    await saveLogic(
+      `UPDATE lesson
+       SET is_seen = 1,
+           seen_date = ?
+       WHERE lesson_id = ?`,
+      [
+        date,
+        id
+      ]
+    );
+    res.json({
+      success: true
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: err.message
+    });
   }
-
-  return files;
-}
-
-async function saveLogic(command, values) {
-    let connection;
-    try { 
-        connection = await oracleInstance();
-        await connection.execute(command, values, {autoCommit: true});
-    } finally {
-        if (connection) { 
-          await connection.close();  
-        } 
-    }  
-} 
-
-async function query(command) {
-    let connection;
-    try {
-        connection = await oracleInstance();
-        const result =  await connection.execute(command, [], {outFormat: OracleDB.OUT_FORMAT_OBJECT});
-        return result.rows;
-    } catch(err) {
-        console.error(err);
-        throw err;
-    } finally {
-        if (connection) {
-            try {
-                 connection.close();
-            } catch(err) {
-                console.error(err);
-            }
-        }
-    };
-}
-
-function oracleInstance() {
-    try {
-        return OracleDB.getConnection({
-            user: 'tutorialPlayer',
-            password: 'parwan',
-            connectString: 'localhost:1521/seeloo_pdb'
-        });
-    } catch (err) {
-        console.error('connection error: ', err);
-        throw err;
-    }
-}
-
-function getVideoDurationAsync(path) {
+});
+// ===============================
+// DELETE / UNSEE LESSON
+// ===============================
+app.delete("/lesson/delete", async (req, res) => {
+  const { id } = req.body;
+  try {
+    await saveLogic(
+      `UPDATE lesson
+       SET is_seen = 0,
+           seen_date = NULL
+       WHERE lesson_id = ?`,
+      [id]
+    );
+    res.json({
+      success: true
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: err.message
+    });
+  }
+});
+// ===============================
+// VIDEO DURATION
+// ===============================
+function getVideoDurationAsync(videoPath) {
   return new Promise((resolve) => {
-    getVideoDuration(path, resolve);
+    Ffmpeg.ffprobe(
+      videoPath,
+      (err, data) => {
+        if (err) {
+          console.error(
+            "Failed:",
+            videoPath
+          );
+          return resolve(0);
+        }
+        const length =
+          (data.format.duration / 60)
+          .toFixed(0);
+        resolve(length);
+      }
+    );
   });
 }
-
-function getVideoDuration(videoPath, cb) {
-  Ffmpeg.ffprobe(videoPath, (err, data) => {
-    if (err) {
-      console.error('failed', videoPath);
-      console.error(err.message);
-      return cb(0) ;
+// ===============================
+// GET ALL FILES
+// ===============================
+function getAllFiles(rootPath) {
+  const allFiles = [];
+  const folder =
+    fs.readdirSync(
+      rootPath,
+      {
+        withFileTypes: true
+      }
+    );
+  for (const each of folder) {
+    if (each.isDirectory()) {
+      const files =
+        returnFiles(
+          path.join(
+            rootPath,
+            each.name
+          )
+        );
+      allFiles.push(files);
+    } else {
+      allFiles.push([
+        path.join(
+          rootPath,
+          each.name
+        )
+      ]);
     }
-    let length =  (data.format.duration / 60).toFixed(0);
-    cb(length);
-  })
+  }
+  return allFiles.flat();
 }
+// ===============================
+// GET FILES FROM FOLDER
+// ===============================
+function returnFiles(folderPath) {
+  return fs.readdirSync(folderPath)
+    .filter(
+      file =>
+        !file
+          .toLowerCase()
+          .endsWith(".vtt") && !file.toLocaleLowerCase().endsWith(".srt")
+    )
+    .sort(
+      (a, b) =>
+        a.localeCompare(
+          b,
+          undefined,
+          {
+            numeric: true,
+            sensitivity: "base"
+          }
+        )
+    )
+    .map(
+      file =>
+        path.join(
+          folderPath,
+          file
+        )
+    );
+}
+// ===============================
+// START SERVER
+// ===============================
+async function startServer() {
+  try {
+    // start Express
+    app.listen(port, () => {
+      console.log(
+        `Server listening on port ${port}`
+      );
+    });
+  } catch (err) {
+    console.error(
+      "Server could not start:",
+      err
+    );
+  }
+}
+startServer();
 
+async function getCourseId(rootPath) {
+  let connection;
+  try {
+    connection = await mysql.createConnection(mysqlConfig);
+    const [rows] = await connection.query(
+    `SELECT course_id
+     FROM course
+     WHERE root_path = ?`,
+    [rootPath]
+  );
+  if (rows.length > 0) {
+    return rows[0].course_id;
+  }
+  const [result] = await connection.query(
+    `INSERT INTO course (root_path)
+     VALUES (?)`,
+    [rootPath]
+  );
+  return result.insertId;
+  } catch (err) {
+    console.error("Database creation error:", err);
+    throw err;
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+  
+}
