@@ -116,7 +116,7 @@ $(document).on("keydown", function (event) {
   }
 
 
-  
+
   // Shift + > = increase speed
   if (event.shiftKey && event.code === "Period") {
     video.playbackRate = Math.min(video.playbackRate + 0.25, 4);
@@ -130,7 +130,7 @@ $(document).on("keydown", function (event) {
     showSpeed(video);
   }
 
-  if (event.key === "ArrowRight") {
+  if (event.key.toLowerCase() === "n") {
     const cards = $(".cards");
 
     if (currentCard < cards.length - 1) {
