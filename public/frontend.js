@@ -9,7 +9,7 @@ $(document)
   .on("click", ".cards", function () {
     const cards = $(".cards");
     currentCard = cards.index(this);
-    console.log('current card: ', currentCard);
+    console.log("current card: ", currentCard);
 
     const lessonId = $(this).data("id");
     const rawDate = new Date();
@@ -107,6 +107,14 @@ $(document).on("keydown", function (event) {
     }
   }
 
+  if (event.key === "ArrowDown") {
+    video.volume = Math.max(video.volume - 0.1, 0);
+  }
+
+  if (event.key === "ArrowUp") {
+    video.volume = Math.min(video.volume + 0.1, 1);
+  }
+
   // Shift + > = increase speed
   if (event.shiftKey && event.code === "Period") {
     video.playbackRate = Math.min(video.playbackRate + 0.25, 4);
@@ -120,8 +128,7 @@ $(document).on("keydown", function (event) {
     showSpeed(video);
   }
 
-    if (event.key === "ArrowRight") {
-
+  if (event.key === "ArrowRight") {
     const cards = $(".cards");
 
     if (currentCard < cards.length - 1) {
@@ -131,7 +138,6 @@ $(document).on("keydown", function (event) {
       cards.eq(currentCard).trigger("click");
     }
   }
-
 });
 
 const afgMonth = {
