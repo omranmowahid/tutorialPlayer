@@ -28,5 +28,5 @@ build/
 # Coverage
 coverage/
 
-/public/video.mp4
-/public/pdf.pdf
+public/video.mp4
+public/pdf.pdf
