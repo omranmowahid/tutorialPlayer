@@ -115,6 +115,8 @@ $(document).on("keydown", function (event) {
     video.volume = Math.min(video.volume + 0.1, 1);
   }
 
+
+  
   // Shift + > = increase speed
   if (event.shiftKey && event.code === "Period") {
     video.playbackRate = Math.min(video.playbackRate + 0.25, 4);
