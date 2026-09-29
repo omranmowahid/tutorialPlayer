@@ -1,0 +1,149 @@
+WEBVTT
+
+0
+00:02.180 --> 00:08.990
+First of all, we will briefly discuss the evolution of the mobile communication systems from 1G to
+
+1
+00:08.990 --> 00:14.380
+the 5G, you might ask the question that what does this G stands for?
+
+2
+00:14.420 --> 00:16.540
+This G stands for Generation.
+
+3
+00:16.880 --> 00:25.730
+That means that 1 G stands for first generation of the mobile communication systems and the most famous
+
+4
+00:25.730 --> 00:33.370
+1G systems were AMPS and NMTS and these 1G systems were analog systems.
+
+5
+00:33.380 --> 00:40.790
+That means that they did not provide any data services, they only provided analog voice services.
+
+6
+00:41.120 --> 00:47.420
+So we moved on from 1G systems to the 2G systems and among the 2G systems...
+
+7
+00:47.420 --> 00:55.970
+GSM is the most famous and the most widely deployed  2G system that is still deployed in many parts
+
+8
+00:55.970 --> 00:57.150
+of the world.
+
+9
+00:57.590 --> 01:08.480
+And when the GPRS was added on top of the GSM technology, then this 2G systems became
+
+10
+01:08.480 --> 01:12.440
+2.5G systems and in the 2.5G systems...
+
+11
+01:12.770 --> 01:20.790
+A user experienced a data rate of 50 kbps under the normal circumstances.
+
+12
+01:21.530 --> 01:29.540
+So then we moved on from the 2.5 G systems to the 2.75G  systems as the demand
+
+13
+01:29.540 --> 01:32.420
+for the data services kept on rising.
+
+14
+01:33.050 --> 01:43.520
+And when we added the EDGE technology on top of the GSM technology, we got the 2.75G
+
+15
+01:43.530 --> 01:49.700
+systems in which user experienced a data rate of 150 kilobits per second.
+
+16
+01:51.030 --> 01:58.260
+And then there was a fundamental shift in the technology, we moved from the 2G systems to the 3G systems
+
+17
+01:58.650 --> 02:06.660
+and in the 3G systems, UMTS is the most widely deployed and the most famous 3G technology in which
+
+18
+02:06.670 --> 02:13.950
+user experienced a data rate of 384 kilobits per second under the normal conditions.
+
+19
+02:14.670 --> 02:24.330
+And then we moved on to the 3.5 G systems in which HSPA was added on top of the UMTS
+
+20
+02:24.330 --> 02:25.090
+technology.
+
+21
+02:25.560 --> 02:34.080
+And in this case, user experienced a data rate of 10 megabits per second, and then we moved from
+
+22
+02:34.080 --> 02:42.360
+3.5 to 3.75 G systems in which the HSPA+ technology was used in order
+
+23
+02:42.360 --> 02:44.390
+to provide the data services.
+
+24
+02:44.850 --> 02:51.520
+And in these systems, the users experienced a data rate of 20 megabits per second.
+
+25
+02:52.740 --> 02:53.790
+.
+
+26
+02:53.790 --> 03:00.000
+Then there was a fundamental shift in the technology and we moved from the 3G systems to the 4G systems.
+
+27
+03:00.510 --> 03:10.260
+And LTE is a 4G system in which a user experienced a data rate of 20 to 50 megabits per second depending
+
+28
+03:10.260 --> 03:12.210
+upon the channel conditions.
+
+29
+03:13.470 --> 03:21.630
+And then we moved from LTE to the LTE advanced in which the targeted data rate was one gigabits per
+
+30
+03:21.900 --> 03:23.730
+second per user.
+
+31
+03:24.180 --> 03:31.440
+But the actual data that the user experienced, it was in low hundreds of megabits per second.
+
+32
+03:31.950 --> 03:40.110
+And then we moved on from the 4G technology to 5G technology in which the targeted data rate is 20 gigabits
+
+33
+03:40.110 --> 03:40.860
+per second.
+
+34
+03:41.190 --> 03:48.460
+But the actual data that a user experiences it is in high hundreds of megabits per second.
+
+35
+03:48.870 --> 03:56.070
+So here we can see that the fundamental driver in the evolution of the mobile communication system is
+
+36
+03:56.070 --> 04:01.530
+the requirement to provide higher and higher data to the user.
