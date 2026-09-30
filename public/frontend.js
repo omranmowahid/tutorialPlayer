@@ -115,6 +115,14 @@ $(document).on("keydown", function (event) {
     video.volume = Math.min(video.volume + 0.1, 1);
   }
 
+  if (event.key.toLowerCase() === "f") {
+    if (!document.fullscreenElement) {
+        video.requestFullscreen();
+    } else {
+        document.exitFullscreen();
+    }
+}
+
 
 
   // Shift + > = increase speed
